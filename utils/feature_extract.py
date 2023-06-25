@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2
 
-
 def calculate_lbp_histogram(image, num_points, radius):
     # Chuyển ảnh sang ảnh xám nếu cần
     if len(image.shape) > 2:
@@ -52,24 +51,18 @@ def calculate_lbp_histogram(image, num_points, radius):
     return histogram
 
 
-def extract_hog_features(image_path):
-    # Đọc ảnh và chuyển đổi sang ảnh xám
-    image = io.imread(image_path)
-    gray_image = color.rgb2gray(image)
-    
-    # Trích chọn đặc trưng HOG
-    features, hog_image = hog(gray_image, visualize=True)
-    
-    # Hiển thị ảnh gốc và ảnh HOG
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-    ax1.imshow(image, cmap='gray')
-    ax1.set_title('Original Image')
-    ax1.axis('off')
-    ax2.imshow(hog_image, cmap='gray')
-    ax2.set_title('HOG Image')
-    ax2.axis('off')
-    plt.show()
-    
+def extract_hog_features(image):
+    # Chuyển ảnh sang ảnh xám nếu cần
+    if len(image.shape) > 2:
+        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Chuẩn hóa ảnh đầu vào
+    image = exposure.rescale_intensity(image, in_range=(0, 255))
+
+    # Trích xuất đặc trưng HOG
+    features, _ = hog(image, orientations=9, pixels_per_cell=(8, 8),
+                              cells_per_block=(2, 2), visualize=True, multichannel=False)
+
     return features
 
 
