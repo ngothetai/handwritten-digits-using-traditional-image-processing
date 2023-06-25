@@ -3,6 +3,7 @@ from skimage import io, color
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+from skimage import exposure
 
 def calculate_lbp_histogram(image, num_points, radius):
     # Chuyển ảnh sang ảnh xám nếu cần
@@ -47,22 +48,27 @@ def calculate_lbp_histogram(image, num_points, radius):
     
     # Chuẩn hóa histogram thành vector đặc trưng (tổng các bin = 1)
     histogram = histogram / np.sum(histogram)
-    
+    #print('Trích xuất LBP xong!')
     return histogram
 
 
 def extract_hog_features(image):
     # Chuyển ảnh sang ảnh xám nếu cần
     if len(image.shape) > 2:
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        image = color.rgb2gray(image)
+        #image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
     # Chuẩn hóa ảnh đầu vào
     image = exposure.rescale_intensity(image, in_range=(0, 255))
 
     # Trích xuất đặc trưng HOG
     features, _ = hog(image, orientations=9, pixels_per_cell=(8, 8),
-                              cells_per_block=(2, 2), visualize=True, multichannel=False)
+                              cells_per_block=(2, 2), visualize=True)
 
+    # # Chuẩn hóa đặc trưng HOG
+    features = features / np.linalg.norm(features)
+
+    #print('Trích xuất HOG xong!')
     return features
 
 
